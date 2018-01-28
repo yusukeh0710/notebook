@@ -26,3 +26,12 @@ Once Exit the terminal and open new terminal again.
 <pre>
 docker run --rm hello-world
 </pre>
+
+# RUN command
+
+# BUILD command
+- Build image with Dockerfile
+<pre>
+docker build --tag REPO_NAME:TAG -f DOCKERFILE DEST
+e.g. docker build --tag ubuntu:test -f Dockerfile.ubuntu .
+</pre>
