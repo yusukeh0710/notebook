@@ -32,6 +32,6 @@ docker run --rm hello-world
 # BUILD command
 - Build image with Dockerfile
 <pre>
-docker build --tag REPO_NAME:TAG -f DOCKERFILE DEST
+docker build --tag REPO_NAME:TAG -f DOCKERFILE DOCKER_FILE_DIR
 e.g. docker build --tag ubuntu:test -f Dockerfile.ubuntu .
 </pre>
