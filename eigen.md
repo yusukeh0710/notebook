@@ -17,6 +17,7 @@ Compile:
 </pre>
 
 ## Basic
+template:
 <pre>
 #include <Eigen/Dense>
 #include <iostream>
@@ -37,24 +38,93 @@ int main() {
 }
 </pre>
 
-other style declaration:
-- Eigen::Vector2d (= VectorXd v(2))
-- Eigen::Vector3d (= VectorXd v(3))
-- Eigen::Matrix3d (= MatrixXd m(3,3))
+declaration:
+- Eigen::Matrix<type, row, col> m
+- Eigen::VectorXi v(num), Eigen::VectorXf w(num), Eigen::VectorXd x(num) = (int vec, float vec, double vec)
+- Eigen::MatrixXi a(row, col), Eigen::MatrixXf b(row, col), Eigen::MatrixXd c(row, col) (= int mat, float mat, double mat)
+- Eigen::Vector2i (= Eigen::Matrix<int, 2, 1>)
+- Eigen::Matrix3f (= Eigen::Matrix<float, 3, 3>)
+
+init:
+- Eigen::MatrixXd::Identity(row, col), Eigen::Matrix3d::Identity()
+- Eigen::MatrixXd::Zero(row, col), Eigen::Matrix3d::Zero()
+- Eigen::MatrixXd::Ones(row, col), Eigen::Matrix3d::Ones()
+- Eigen::MatrixXd::Constant(row, col, value), Eigen::Matrix3d::Contant(value)
+- Eigen::MatrixXd::Random(row, col), Eigen::Matrix3::Random()
+- Eigen::Vector3d::UnitX(), UnitY(), UnitZ(), Eigen::VectorXd::Unit(4,2) (= [0 0 1 0])
+- Eigen::VectorXd::Zero(num), Eigenn::VectorXd::Ones(num), Eigen::VectorXd::Constant(num, value), Eigen::VectorXd::Random(num)
+
+matrix info:
+- m.size() (= row x col)
+- m.rows(), m.cols()
+- m.norm()
 
 ## basic operation
 vector operation
-<pre>
- auto v = v1 + v2;
- auto v = v1 - v2;
- auto v = 5 * v1;
- auto v = v1.dot(v2);  // v1 * v2
-</pre>
+- add: v1 + v2
+- sub: v1 - v2
+- mul: 5 * v1
+- inner product: v1.dot(v2) 
 
 matrix operation
+- add: m1 + m2
+- sub: m1 - m2
+- mul: 5 * m1
+- inner product: m1 * m2
+
+## other type matrix
+- inverse: m.inverse()
+- tranpose: m.transpose(), v.transpose()
+- diagonal:
+  - Eigen::DiagonalMatrix<float, 3> m = v.asDiagonal();
+  - Eigen::DiagonalMatrix<float, 3> m(3, 8, 9);
+  - m = Eigen::Matrix3f::Zero; m.diagonal() << 3, 8, 9;
+
+## Space transformation / Affine transformation
+- translation / rotation
+
+code:
 <pre>
- auto m = m1 + m2;
- auto m = m1 - m2;
- auto m = 5 * m1;
- auto m = m1 * m2;  // inner product
+Eigen::Translation2f trans(1,2);
+Eigen::Rotation2Df rot(3.14/2);
+Eigen::Affine2f affine = trans * rot;
+std::cout << affine.matrix() << std::endl;
+std::cout << affine.translation() << std::endl;
+std::cout << affine.rotation() << std::endl;
+</pre>
+
+output:
+<pre>
+0.000796274          -1           1
+          1 0.000796274           2
+          0           0           1
+1
+2
+0.000796274          -1
+          1 0.000796274
+</pre>
+
+- set affine parameter with matrix
+
+code:
+<pre>
+Eigen::Matrix3f m;
+m << 1, 0, 5,
+     0, 1, 9,
+     0, 0, 1;
+affine = m;
+std::cout << affine.matrix() << std::endl;
+std::cout << affine.translation() << std::endl;
+std::cout << affine.rotation() << std::endl;
+</pre>
+
+output:
+<pre>
+1 0 5
+0 1 9
+0 0 1
+5
+9
+1 0
+0 1
 </pre>
