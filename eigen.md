@@ -18,7 +18,7 @@ Compile:
 
 ## Basic
 template:
-<pre>
+```
 #include <Eigen/Dense>
 #include <iostream>
 
@@ -36,7 +36,7 @@ int main() {
   std::cout << m << std::endl;
   return 0;
 }
-</pre>
+```
 
 declaration:
 - Eigen::Matrix<type, row, col> m
@@ -84,14 +84,14 @@ matrix operation
 - translation / rotation
 
 code:
-<pre>
+```
 Eigen::Translation2f trans(1,2);
 Eigen::Rotation2Df rot(3.14/2);
 Eigen::Affine2f affine = trans * rot;
 std::cout << affine.matrix() << std::endl;
 std::cout << affine.translation() << std::endl;
 std::cout << affine.rotation() << std::endl;
-</pre>
+```
 
 output:
 <pre>
@@ -107,7 +107,7 @@ output:
 - set affine parameter with matrix
 
 code:
-<pre>
+```
 Eigen::Matrix3f m;
 m << 1, 0, 5,
      0, 1, 9,
@@ -116,7 +116,7 @@ affine = m;
 std::cout << affine.matrix() << std::endl;
 std::cout << affine.translation() << std::endl;
 std::cout << affine.rotation() << std::endl;
-</pre>
+```
 
 output:
 <pre>
@@ -127,4 +127,71 @@ output:
 9
 1 0
 0 1
+</pre>
+
+## Eigen Applications
+### Group Theory C++ library (https://github.com/strasdat/Sophus)
+- Install
+<pre>
+$ git clone https://github.com/strasdat/Sophus.git
+$ cd Sophus
+$ mkdir build; cd build
+$ cmake ../
+$ make; sudo make install
+</pre>
+
+- Example implementation
+```
+#include <iomanip>
+#include <iostream>
+
+#include <Eigen/Dense>
+#include <sophus/se2.hpp>
+
+int main() {
+  Eigen::Matrix2d R1, R2;
+  R1  << cos(M_PI/2), -sin(M_PI/2),
+         sin(M_PI/2), cos(M_PI/2);
+  R2 = R1.inverse();
+
+  Eigen::Vector2d t1, t2;
+  t1 << 2, 1;
+  t2 << -1, 2;
+
+  Sophus::SE2d m1(R1, t1), m2(R2, t2);
+  std::cout << std::fixed << std::setprecision(2);
+  std::cout << "rotation::" << std::endl;
+  std::cout << m1.rotationMatrix() << std::endl << std::endl;
+  std::cout << "translation:" << std::endl;
+  std::cout << m1.translation() << std::endl << std::endl;
+  std::cout << "SE2 matrix:" << std::endl;
+  std::cout << m1.matrix() << std::endl << std::endl;
+
+  Sophus::SE2d m3 = m1 * m2;
+  std::cout << "m1 * m2:" << std::endl;
+  std::cout << m3.matrix() << std::endl;
+
+  return 0;
+}
+```
+
+output:
+<pre>
+rotation::
+ 0.00 -1.00
+ 1.00  0.00
+
+translation:
+2.00
+1.00
+
+SE2 matrix:
+ 0.00 -1.00  2.00
+ 1.00  0.00  1.00
+ 0.00  0.00  1.00
+
+m1 * m2:
+ 1.00 -0.00  0.00
+ 0.00  1.00  0.00
+ 0.00  0.00  1.00
 </pre>
