@@ -81,7 +81,7 @@ matrix operation
   - m = Eigen::Matrix3f::Zero; m.diagonal() << 3, 8, 9;
 
 ## Space transformation / Affine transformation
-- translation / rotation
+- 2D translation / rotation
 
 code:
 ```
@@ -127,6 +127,54 @@ output:
 9
 1 0
 0 1
+</pre>
+
+- 3D translation / rotation
+
+code:
+```
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+...
+
+int main() {
+  Eigen::Vector3f v;
+  v  <<  1,  2,  3;
+
+  Eigen::Translation3f trans(1,2,3);
+  std::cout << trans * v  << std::endl << std::endl;
+
+  Eigen::Matrix3f m;
+  m = Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitZ()); // Z-axis rotation (XY-Plane)
+  std::cout << m * v << std::endl << std::endl;
+
+  m = Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitX()); // X-axis rotation (YZ-Plane)
+  std::cout << m * v << std::endl << std::endl;
+
+  m = Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitY()); // Y-axis rotation (ZX-Plane)
+  std::cout << m * v << std::endl << std::endl;
+  
+  return 0;
+}
+```
+
+output:
+<pre>
+2
+4
+6
+
+-0.707107
+  2.12132
+        3
+
+        1
+-0.707107
+  3.53553
+
+2.82843
+      2
+1.41421
 </pre>
 
 ## Eigen Applications
