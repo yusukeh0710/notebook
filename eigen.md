@@ -133,16 +133,17 @@ output:
 
 code:
 ```
+#include <cmath>
+#include <iostream>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-...
 
 int main() {
   Eigen::Vector3f v;
-  v  <<  1,  2,  3;
+  v << 1,  2,  3;
 
   Eigen::Translation3f trans(1,2,3);
-  std::cout << trans * v  << std::endl << std::endl;
+  std::cout << trans * v << std::endl << std::endl;
 
   Eigen::Matrix3f m;
   m = Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitZ()); // Z-axis rotation (XY-Plane)
