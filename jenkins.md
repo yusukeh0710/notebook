@@ -1,6 +1,6 @@
 ## Jenkins Script
 #### Template
-```
+```groovy
 pipeline {
     agent {
         label 'slave'
@@ -49,5 +49,16 @@ pipeline {
             '''
         }
     }
+}
+```
+
+#### Get upstream parameter triggerd by the upstream's build
+```groovy
+if (currentBuild.upstreamBuilds.isEmpty()) {
+  // Manual Trigger -> Do nothing
+} else {
+  upstream = currentBuild.upstreamBuilds[0]
+  paramA = upstream.buildVariables["paramA"]
+  paramB = upstream.buildVariables["paramB"]
 }
 ```
