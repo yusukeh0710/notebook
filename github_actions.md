@@ -8,9 +8,7 @@ Continuous Integration (CI) では、ビルドとテストを自動化して、�
 
 GitHubでは、GitHub Actionsと呼ばれるCI/CDサービスが提供されており。GitHubのプラットフォーム緊密に統合されているのが特徴である。これにより、GitHubで管理するコードやイベント(Push, Pull Request, Release)と直接連携しながら、ワークフローの定義から実行、結果の確認までを一元的に管理できる。本稿ではこのGitHub Actionsについて解説する。
 
-
-
-#### ワークフローを定義する
+### ワークフローを定義する
 
 Github Actionsでは、ワークフローという単位で処理を定義する。ワークフローはコードのビルド、テスト、デプロイなどの一連の処理を自動化する仕組みである。YAMLファイルで記述し、リポジトリの`.github/workflows`に配置することで、Github Actionsで実行可能となる。
 
@@ -33,8 +31,6 @@ REPO_ROOT
             ├──  ...
             └──  その他のツール、スクリプト
 ```
-
-
 
 以下は、ワークフローのサンプルコードである。これを`.github/workflows/hello.yml`として動作確認のため保存する。
 
@@ -59,16 +55,14 @@ jobs:
 
 
 
-#### ワークフローを実行する ([参考ページ](https://docs.github.com/ja/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow#running-a-workflow))
+### ワークフローを実行する ([参考ページ](https://docs.github.com/ja/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow#running-a-workflow))
 
 1. ワークフローを配置したリポジトリのGitHubページに移動する
 2. リポジトリ名の下にある「Actions」をクリックする
 3. 左側のサイドバーで、実行するワークフローを選択する
 4. 「Run workflow」ボタンをクリックする
 
-
-
-#### 実行結果を確認する
+### 実行結果を確認する
 
 ワークフローを実行すると、実行一覧に結果が追加される。
 例えば、以下の情報を確認できる：
@@ -77,10 +71,7 @@ jobs:
 - 各ジョブやステップの実行状況
 - 実行ログ
 - 実行時間
-
 - 生成された成果物
-
-
 
 ## 2. Workflow Components
 
@@ -92,7 +83,7 @@ jobs:
 * ランナー：ジョブの実行環境
 * ステップ：ワークフローにおける処理の最小単位、steps以下に複数定義可能
 
-
+<img src="./figure/github_actions/overview.png" alt="design_workflow" style="zoom:110%;" />
 
 前述のワークフローファイルで説明すると、以下の通りである：
 
@@ -114,14 +105,14 @@ jobs:
         run: echo "Hello, GitHub Actions!"
 ```
 
-
-
-#### イベント
+### イベント
 
 主要なイベントとして、「手動実行」「定期実行」「Push/Pullrequestイベント」について解説する。
 それ以外のイベントについては[イベント一覧](https://docs.github.com/ja/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows)を参照のこと。
 
-**<u>手動実行: workflow_dispatch</u>**
+<br>
+
+#### <ins>手動実行: workflow_dispatch</ins>
 
 リポジトリのページからワークフローを手動実行するためのイベントである。
 入力パラメータは `inputs` キーで指定し、ワークフロー内で `${{ inputs.xxx }}` の形式で参照する。
@@ -151,8 +142,6 @@ jobs:
       - run: echo "${{ inputs.message }}, Log level ${{ inputs.log-level }}"
 ```
 
-
-
 入力パラメータには使用可能なプロパティは以下の通りである：
 
 * type: データ型（boolean, number, string, choice, environment）
@@ -163,9 +152,9 @@ jobs:
 * required: 指定が必須かどうか
 * description: パラメータの説明文
 
+<br>
 
-
-**<u>定期実行: schedule</u>**
+#### <ins>定期実行: schedule</ins>
 
 定期的にワークフローを実行するためのイベントである。実行タイミングはcron式で指定する。
 
@@ -176,9 +165,9 @@ on:
     - cron: '30 6,18 * * 3'  # Run 6:30 and 18:30 on every Wednesday
 ```
 
+<br>
 
-
-**<u>Push / Pullrequestイベント</u>**
+#### <ins>Push / Pullrequestイベント</ins>
 
 コード変更のイベントが生じたときにワークフローを実行する。
 `push`はリポジトリへのプッシュ、`pull_request`はプルリクエストの作成や更新時に発火する。
@@ -191,9 +180,7 @@ on:
     branches: [ main ]  # When PR is created/updated for the main branch
 ```
 
-
-
-#### ランナー
+### ランナー
 
 * [GitHub-hosted Runner](https://docs.github.com/ja/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)：
   GitHubの提供するマネージドな実行環境。特別な要件がなければ、こちらの利用を推奨する。
@@ -215,9 +202,7 @@ jobs:
       .....
 ```
 
-
-
-#### ステップ
+### ステップ
 
 * 「シェルコマンド」による定義：
   `run`キーで指定し、通常のシェルスクリプトのように記述する。
@@ -239,11 +224,9 @@ jobs:
       ref: main
   ```
 
-
-
 ## 3. Workflow Syntax
 
-#### 式と関数
+### 式と関数
 
 * リテラル
   * null
@@ -267,9 +250,7 @@ jobs:
   * `[]`: 括弧内の任意の1文字（例：`test[A-Z].txt` → `testX.txt`）
   * `!`: マッチしたパターンを除外（例：`!Readme.md`）
 
-
-
-#### コンテクスト
+### コンテクスト
 
 コンテキストは、ワークフローの実行、変数、ランナーの環境、ジョブ、ステップなどの情報へのアクセスを提供する。
 各コンテキストはプロパティを含むオブジェクトであり、`${{  github.actor }}`の形式で参照する。
@@ -306,9 +287,7 @@ steps:
     run: echo '${{ toJSON(runner) }}'
 ```
 
-
-
-#### 環境変数
+### 環境変数
 
 環境変数は`env`キーを使用して設定する。ワークフロー全体から個別のステップまで、必要なスコープに適用することができる。
 環境変数の参照は、`${MY_ENV_VAR}}`、もしくは、コンテキストを介して`${{ env.MY_ENV_VAR }}`と記述する。なお、GitHub Actionsが提供するデフォルトの環境変数については[公式ドキュメント](https://docs.github.com/ja/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables)を参照のこと。
@@ -335,26 +314,21 @@ jobs:
           ACTOR: ${{ github.actor}}
 ```
 
-
-
-#### Variables / Secrets
+### Variables / Secrets
 
 GitHub Actionsでは、複数のワークフローで共通して使用する値を`Variables`と`Secrets`として事前に登録できる。値の参照はコンテクストを介して取得し,`${{ var.VAR_NAME }}` や `${{ secrets.PASSWORD }}` のように記述する。
+
 Varibles/Secretsは以下のように使い分ける：
 
 - **Variables**：機密性が低い情報を格納。
 - **Secrets**：機密性が高い情報を格納。Secretsに登録された情報は暗号化され、ログや設定画面でもマスクされる。
-
-
 
 参考情報：
 
 * [Variablesに情報を格納する](https://docs.github.com/ja/enterprise-cloud@latest/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables)
 * [GitHub ActionsでのSecretsの使用](https://docs.github.com/ja/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)
 
-
-
-#### Environments
+### Environments
 
 `Environments`は、複数のデプロイ環境（本番環境、テスト環境など）を管理するための機能である。以下のような特徴がある：
 
@@ -364,11 +338,11 @@ Varibles/Secretsは以下のように使い分ける：
 
 
 
-#### 条件分岐
+### 条件分岐
 
 `if`キーを使用することで、ジョブやステップの実行条件を制御できる。
 
-<u>ステータスによる条件分岐</u>
+<ins>ステータスによる条件分岐</ins>
 
 * success(): 手前の処理が成功したらTrue
 * failure(): 手前の処理が失敗したらTrue
@@ -384,9 +358,9 @@ steps:
     if: ${{ success() }}
 ```
 
+<br>
 
-
-<u>条件式による条件分岐</u>
+<ins>条件式による条件分岐</ins>
 
 (例)
 
@@ -400,7 +374,7 @@ steps:
 
 
 
-#### ステップ間のデータ共有
+### ステップ間のデータ共有
 
 * GITHUB_OUTPUT: 変数としてデータを保持
 * GITHUB_ENV: 環境変数としてデータ保持
@@ -434,9 +408,9 @@ steps:
 
 
 
-#### その他のテクニック
+### その他のテクニック
 
-**<u>実行タイトルの設定</u>**
+**<ins>実行タイトルの設定</ins>**
 
 `run-name`キーを使用して、実行タイトルを動的に設定できる。
 
@@ -448,7 +422,7 @@ jobs:
 
 
 
-**<u>シェルの指定</u>**
+**<ins>シェルの指定</ins>**
 
 ステップごとに使用するシェルを指定できる。
 
@@ -477,7 +451,7 @@ jobs:
 
 
 
-**<u>エラーハンドリング</u>**
+**<ins>エラーハンドリング</ins>**
 
 ```continue-on-error```を指定すると、ステップがエラーになっても後続のステップを実行する。
 
@@ -493,7 +467,7 @@ jobs:
 
 
 
-**<u>タイムアウト設定</u>**
+**<ins>タイムアウト設定</ins>**
 
 ```yaml
 jobs:
@@ -506,14 +480,14 @@ jobs:
 
 ## 4. Designing Workflow
 
-#### 複数ジョブの制御
+### 複数ジョブの制御
 
 * デフォルトでは、それぞれのジョブは並列実行される
 * ジョブ間に依存関係があり逐次実行する場合、`needs`キーを使用して実行順序を制御する
 
 <img src="./figure/github_actions/design_workflow.png" alt="design_workflow" style="zoom:40%;" />
 
-#### ジョブ間のデータ共有
+### ジョブ間のデータ共有
 
 * ジョブ間でデータを共有する場合、`outputs`を使用する
 * 値の設定：`${GITHUB_OUTPUTS}`に値を出力し、`outputs`にて格納する変数を指定する
@@ -538,7 +512,7 @@ jobs:
 
 
 
-#### Matrix
+### Matrix
 
 `strategy.matrix`は、複数の設定でジョブを実行する機能である。これを使用して、複数のOSや複数バージョンのアプリ、実行環境の組み合わせを一度にテストすることができる。
 
@@ -578,7 +552,7 @@ jobs:
 
 
 
-#### キャッシュ
+### キャッシュ
 
 ```actoins/cache```は、ダウンロードや生成物などの再利用可能なデータをキャッシュする機能である。キャッシュを使用することで、ビルド時間を短縮し、ワークフローの実行効率を向上させることができる。
 
@@ -594,7 +568,7 @@ jobs:
 
 
 
-<u>キャッシュの動作</u>
+<ins>キャッシュの動作</ins>
 
 * `path`で指定したファイルやディレクトリがキャッシュの対象となる
 * `key`に完全一致したら、そのキャッシュが指定パスに展開される
@@ -604,13 +578,13 @@ jobs:
   * `action/cache/restore`: キャッシュの復元だけ
 
 
-<u>キャッシュの削除</u>
+<ins>キャッシュの削除</ins>
 
 * 7日以上アクセスされていないキャッシュは自動的に削除される
 * 合計サイズは各リポジトリ10GBまで
 * リポジトリの「Actions」ページからキャッシュの確認と削除ができる
 
-<u>サンプルコード</u>
+<ins>サンプルコード</ins>
 
 ```yaml
 env:
@@ -636,7 +610,7 @@ steps:
 
 
 
-#### アーティファクト
+### アーティファクト
 
 Artifactは、ジョブ間でファイルを共有するための機能である。`actions/upload-artifact`でアップロードを行い、`actions/download-artifact`でダウンロードを行う。また、実行完了後も一定期間保存され、ワークフローの実行ページから生成物の確認、ダウンロード、削除ができる。
 
@@ -656,7 +630,7 @@ Artifactは、ジョブ間でファイルを共有するための機能である
 ```
 
 
-<u>サンプルコード</u>
+<ins>サンプルコード</ins>
 
 ```yaml
 steps:
@@ -675,9 +649,9 @@ steps:
 
 
 
-#### レポーティング
+### レポーティング
 
-**<u>デバッグログの有効化</u>**
+**<ins>デバッグログの有効化</ins>**
 
 * ワークフローの再実行時に「Enable debug logging」にチェックをつける
 
@@ -689,7 +663,7 @@ steps:
 
 
 
-**<u>デバッグログの出力</u>**
+**<ins>デバッグログの出力</ins>**
 
 ワークフローコマンド `::debug::`を使用して、デバッグログを出力できる。
 ```yaml
@@ -698,7 +672,7 @@ run: echo "::debug::This is debug message."
 
 
 
-**<u>ログのグループ化</u>**
+**<ins>ログのグループ化</ins>**
 
 ワークフローコマンド`::group::<group-name>`と`::endgroup::`を使用してログ出力をグループ化できる。囲まれた部分の出力はグループ化されて、折りたたまれて表示される。
 
@@ -715,7 +689,7 @@ steps:
 
 <img src='./figure/github_actions/groupenv.png' style="zoom:70%;" />
 
-**<u>アノテーション</u>**
+**<ins>アノテーション</ins>**
 
 ワークフローコマンド`::notice::`, `::warning::`, `::error::`を使用して、重要度に応じたメッセージを出力できる。また、ワークフローの実行ページのサマリー部分にも表示され、重要なメッセージを強調して残すことができる。
 
@@ -728,7 +702,7 @@ steps:
 
 <img src='./figure/github_actions/annotation.png' style="zoom:55%;" />
 
-**<u>ジョブサマリー</u>**
+**<ins>ジョブサマリー</ins>**
 
 `${GITHUB_STEP_SUMMARY}` へマークダウン形式を出力すると、整形されて、ワークフロー実行ページ上にサマリー表示が生成される。ジョブの実行結果の要約やテスト結果の可視化の方法として有用である。
 
@@ -742,7 +716,7 @@ steps:
 
 
 
-**<u>チャット通知</u>**
+**<ins>チャット通知</ins>**
 
 (Slackへの通知例)
 ```yaml
@@ -784,7 +758,7 @@ steps:
 
 
 
-#### リモートアクション / ローカルアクション
+### リモートアクション / ローカルアクション
 
 リモートアクションは、`actions/checkout@v4`などを指す。文字列とURLは連動しており、`{owner}/{repository}@{tag}`で指定して使用する。例えば、`actions/checkout@v4`は`https://github.com/actions/checkout`のv4を指し、`docker/build-push-action@v5`は`https://github.com/docker/build-push-action`のv5を指す。
 
@@ -806,7 +780,7 @@ ROOT_REPO
 
 
 
-#### Composite Action
+### Composite Action
 
 Composite Actionはワークフローファイル同様に、複数のシェルやアクションを組み合わせて作成する。メタデータ構文と呼ばれる構文で書かれており、`input`、`output`、`runs`とその他のキーで構成される。なお、ワークフローファイルと異なり、shellの指定を省略できない点に注意が必要である。
 
@@ -849,7 +823,7 @@ steps:
 
 
 
-#### Javascript Action
+### Javascript Action
 
 Javacript Actionでは、Node.jsを使用してアクションを実装する。入出力はJavscript libraryである`@actoins/core`を介して行う。
 以下に、基本的なディレクトリ構成とサンプルコードを示す。
@@ -927,7 +901,7 @@ steps:
 
 
 
-#### Docker Container Action
+### Docker Container Action
 
 Docker Container Actionでは、Dockerコンテナとしてアクションを実装する。特定のランタイムや環境、複雑な依存関係がある場合に適している。入力はシェルの実行引数を介して行い、出力は`${GITHUB_OUTPUT}`を介して行う。
 以下に、基本的なディレクトリ構成とサンプルコードを示す。
@@ -993,7 +967,7 @@ steps:
 
 ## 6. Workflow Collaboration
 
-#### ワークフローの排他制御と自動キャンセル
+### ワークフローの排他制御と自動キャンセル
 
 `concurrency`を使用することで、同時実行するワークフローの数を制御できる。同じ`concurrency`グループに属するワークフローは、一度に1つしか実行されない。
 例えば、以下の設定では、同一のプルリクエストに連続で更新が行われた時に、ワークフローが並行で実行されることを防止する。
@@ -1023,7 +997,7 @@ jobs:
 
 
 
-#### ワークフローの再利用（Reusable Workflows）
+### ワークフローの再利用（Reusable Workflows）
 
 `workflow_call`を使用して、ワークフローを再利用可能なモジュール（Reusable Workflows）として定義し、他のワークフローから呼び出すことができる。アクションが１つの処理をカプセル化する一方で、Reusable Workflowsはワークフローを丸ごとカプセル化する。リリース時の検証とパッケージ生成といった複数のワークフローを再利用するようなケースにて効果を発揮する。
 
@@ -1078,7 +1052,7 @@ jobs:
 
 
 
-#### ワークフローの外部実行
+### ワークフローの外部実行
 
 `repository_dispatch`イベントを使用し、APIを介して特定のイベントを発行し、ワークフローを実行することができる。`types`で受け付けるイベントタイプを指定し、`client_payload`で受け取ったデータにアクセスする。なお、他のイベントと異なり、このイベントはリポジトリのデフォルトブランチ（通常、`main`か`master`）でのみ動作する点に注意が必要である。
 
@@ -1139,9 +1113,9 @@ curl -X POST \
 
 ## 7. Package Release
 
-#### リリースを開始するイベント
+### リリースを開始するイベント
 
-**<u>1. タグイベント</u>**
+**<ins>タグイベント</ins>**
 
 タグのプッシュをトリガーとして、ワークフローを開始する。
 
@@ -1154,7 +1128,7 @@ on:
 
 
 
-**<u>2. リリースイベント</u>**
+**<ins>リリースイベント</ins>**
 
 GitHubのリリース機能と連携して、ワークフローを開始する。
 
@@ -1206,7 +1180,7 @@ on:
 
 
 
-#### リリースノートの自動生成
+### リリースノートの自動生成
 
 以下のサンプルコードは、タグをプッシュした時に、GitHub CLIを使用して前回のリリースからの変更をまとめたリリースノートを自動生成する。
 
@@ -1254,7 +1228,7 @@ jobs:
 
 ## GHA Best Practice
 
-<u>**プッシュ前にymlファイルを事前にチェックする**</u>
+<ins>**プッシュ前にymlファイルを事前にチェックする**</ins>
 
 以下のURLからダウンロードできるactionlintを使用して、構文チェックを行うことができる。
 https://github.com/rhysd/actionlint/releases
@@ -1265,7 +1239,7 @@ $ actionlint .github/workflows/*.yml
 
 
 
-**<u>複数のイベントが登録されているときは、入力パラメータに注意する</u>**
+**<ins>複数のイベントが登録されているときは、入力パラメータに注意する</ins>**
 
 例えば、以下のようなワークフローを作成したとき、schedule/pull_requestではパラメータを指定できないが、workflow_dispatchはパラメータの設定が可能であるため、処理時に入力パラメータの有無に注意を払う必要がある。
 
@@ -1299,11 +1273,11 @@ jobs:
 
 
 
-<u>入力パラメータはジョブサマリーに表示する</u>
+<ins>入力パラメータはジョブサマリーに表示する</ins>
 
 GitHub Actionsの場合、入力パラメータの表示画面がない点に注意が必要である。そのため、例えば、入力パラメータは`${GITHUB_STEP_SUMMARY}`に出力し、ジョブサマリーに表示するなどデバッグや再実行を意識した実装が重要となる。
 
 
-<u>実行環境はロググループを使用して、情報を常に残す</u>
+<ins>実行環境はロググループを使用して、情報を常に残す</ins>
 
 ジョブが失敗したとき、エラー時の状況は非常に重要な情報である。そのため、`printenv`や`df`など実行環境に関する情報は実行ログに残しておくべきである。一方、大量の情報を残すと可視性が落ちる。そのため、`::group::` / `::endgroup::`を使用して、カテゴリ毎にグループ化して実行環境の情報を折りたたんで残すことが望ましい。
