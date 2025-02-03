@@ -12,7 +12,7 @@ GitHubでは、GitHub Actionsと呼ばれるCI/CDサービスが提供されて�
 
 Github Actionsでは、ワークフローという単位で処理を定義する。ワークフローはコードのビルド、テスト、デプロイなどの一連の処理を自動化する仕組みである。YAMLファイルで記述し、リポジトリの`.github/workflows`に配置することで、Github Actionsで実行可能となる。
 
-また、ワークフロー内で実行する最小の処理単位をアクションと呼ぶ。再利用可能な形で実装されており、公開されたアクションを利用することもでき、独自に作成したアクションをリポジトリ内に配置して使用することもできる。
+また、ワークフロー内で特定を実行する最小のモジュールをアクションと呼ぶ。再利用可能な形で実装されており、公開されたアクションを利用することもでき、独自に作成したアクションをリポジトリ内に配置して使用することもできる。
 
 例えば、リポジトリ内では、以下のような構成でファイルを配置する：
 
@@ -182,11 +182,12 @@ on:
 
 ### ランナー
 
-* [GitHub-hosted Runner](https://docs.github.com/ja/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)：
-  GitHubの提供するマネージドな実行環境。特別な要件がなければ、こちらの利用を推奨する。
-* [Self-hosted Runner](https://docs.github.com/ja/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners)：
+* [GitHub-hosted Runner](https://docs.github.com/ja/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)：<br>
+  GitHubの提供するマネージドな実行環境。特別な要件がなければ、こちらの利用を推奨する。<br>
+  使用可能なRunnerやRunnerにインストールされているソフトウェアは[こちら](https://github.com/actions/runner-images)を参照のこと。
+* [Self-hosted Runner](https://docs.github.com/ja/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners)：<br>
   利用者が独自に用意・運用する実行環境。自身で用意するのでOSやスペックなどを自由に決められる。
-* Container Runner:
+* Container Runner:<br>
   Docker containerをRunnerとして使用する。
 
 ```yaml
@@ -242,7 +243,7 @@ jobs:
   * 文字列生成：format(),join()
   * JSON操作：toJSON(`VAR`),fromJSON(`VAR`)
   * ハッシュ生成：hashFiles()
-* フィルタ ( e.g. `${{ github.event.*.html_ur l}}` )
+* フィルタ ( e.g. `${{ github.event.*.html_url }}` )
   * ```*```: 任意の文字列にマッチ（スラッシュを除く）
   * ```**```:任意の文字列にマッチ（スラッシュを含む）
   * `?`: 0文字または1文字（例：`test?.txt` → `test.txt`, `test1.txt`）
@@ -316,7 +317,7 @@ jobs:
 
 ### Variables / Secrets
 
-GitHub Actionsでは、複数のワークフローで共通して使用する値を`Variables`と`Secrets`として事前に登録できる。値の参照はコンテクストを介して取得し,`${{ var.VAR_NAME }}` や `${{ secrets.PASSWORD }}` のように記述する。
+GitHub Actionsでは、複数のワークフローで共通して使用する値を`Variables`と`Secrets`として事前に登録できる。値の参照はコンテクストを介して取得し,`${{ vars.VAR_NAME }}` や `${{ secrets.PASSWORD }}` のように記述する。
 
 Varibles/Secretsは以下のように使い分ける：
 
@@ -333,7 +334,7 @@ Varibles/Secretsは以下のように使い分ける：
 `Environments`は、複数のデプロイ環境（本番環境、テスト環境など）を管理するための機能である。以下のような特徴がある：
 
 * デプロイ先ごとに異なる変数(ホスト名やユーザ名など)やシークレット（パスワードなど）を管理する
-* ```Environment```をデプロイ先の数だけ作成し、```Environment variable```sと```Environment secrets```をそれぞれに登録する
+* ```Environment```をデプロイ先の数だけ作成し、`Environment variables`と`Environment secrets`をそれぞれに登録する
 * ジョブの中で使用するときには、```environment: <environment-name>```と指定する
 
 
@@ -377,7 +378,7 @@ steps:
 ### ステップ間のデータ共有
 
 * GITHUB_OUTPUT: 変数としてデータを保持
-* GITHUB_ENV: 環境変数としてデータ保持
+* GITHUB_ENV: 環境変数としてデータ保持<br>
   ※基本はGITHUB_OUTPUTを推奨、環境変数としてセットが必要なときだけGITHUB_ENVを使用する
 
 ```yaml
@@ -438,7 +439,7 @@ steps:
 * 省略時：```bash -e {0}```
 * 記述時：```bash --noprofile --norc -eo pipefail {0}```
 
-また、デフォルトシェルを指定するときは、以下のように指定する：
+また、デフォルトシェルを指定するときは、以下のように指定する：<br>
 ※ bashであっても、上記で説明したようにshell指定の有無で挙動が変わるので重要
 
 ```yaml
@@ -473,7 +474,31 @@ jobs:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 1  # Timeout: 1min
+    timeout-minutes: 1  # Timeout: 1 min
+```
+
+
+
+**<ins>GitHub API</ins>**
+
+GitHub APIを使用することで、リポジトリを参照したり、プルリクエストにコメントを追加したりするなど、GitHub上のリソースと連携して様々な操作を行うことができる。GitHub APIを使用するためには認証トークンが必要であるが、GitHub Actionsではワークフロー開始時にトークンを自動生成し、`${{ secrets.GITHUB_TOKEN }}`や`${{ github.token }}`に設定するため、これらを参照してAPIの使用することができる。
+
+(例) : PRにコメントを追加する
+```yaml
+steps:
+  - name: Get PR info by HTTP request
+    run: |
+      curl -L \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}"
+  - name: Comment on PR by GitHub CLI
+    run: |
+      gh pr comment ${{ github.event.pull_request.number }} \
+        --body "Code scan has been finished."
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 
@@ -746,11 +771,35 @@ steps:
 
 
 
+### 動的なワークフローの定義
+
+`fromJson()`を使用して、ワークフローを動的に定義できる。以下は、マトリックス定義を動的に生成するサンプルコードである。
+
+```yaml
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - id: list-up
+        run: |
+          json='{"runner": ["ubuntu-latest", "windows-latest"]}'
+          echo "json=${json}" >> ${GITHUB_OUTPUT}
+    outputs:
+      json: ${{ steps.list-up.outputs.json }}
+  print:
+    needs: [prepare]
+    strategy:
+      matrix: ${{ fromJSON(needs.prepare.outputs.json) }}
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - run: echo "${RUNNER_OS}"
+```
+
+
+
 ## 5. Action Module
 
-アクションはモジュール化の重要な手段であり、複雑な処理を再利用可能なコンポーネントとして実装することができる。
-
-アクションには、公開リポジトリで管理されているリモートアクションと、同一リポジトリ内で管理するローカルアクションが存在する。また、アクションの実装には以下の３つの方法が存在する：
+アクションはモジュール化の重要な手段であり、複雑な処理を再利用可能なコンポーネントとして実装することができる。<br>アクションには、公開リポジトリで管理されているリモートアクションと、同一リポジトリ内で管理するローカルアクションが存在する。また、アクションの実装には以下の３つの方法が存在する：
 
 * Composite Action：既存のアクションやシェルコマンドを組み合わせて実装
 * JavaScript Action：Node.jsを使用して実装
@@ -782,7 +831,7 @@ ROOT_REPO
 
 ### Composite Action
 
-Composite Actionはワークフローファイル同様に、複数のシェルやアクションを組み合わせて作成する。メタデータ構文と呼ばれる構文で書かれており、`input`、`output`、`runs`とその他のキーで構成される。なお、ワークフローファイルと異なり、shellの指定を省略できない点に注意が必要である。
+Composite Actionはワークフローファイル同様に、複数のシェルやアクションを組み合わせて作成する。メタデータ構文と呼ばれる構文で書かれており、`input`、`output`、`runs`とその他のキーで構成される。なお、ワークフローファイルと異なり、shellの指定を省略できない点に注意が必要である。また、`vars`コンテキストと`secrets`コンテキストにはアクセスできないため、Variables/SecretsやGITHUB_TOKENはinputs経由で渡す必要がある（ただし、GITHUB_TOKENについては`${{ github.token }}`から取得が可能である）。
 
 以下に、サンプルコードを示す：
 [.github/actions/sample/action.yml]
@@ -1052,6 +1101,14 @@ jobs:
 
 
 
+また、以下のように`secrets: inherit`を指定することで、Secretsをまとめて継承できる。ただし、コードの可読性が落ちるため、通常は非推奨である。
+```yaml
+uses: ./.github/workflows/reusable_workflow.yml
+  secrets: inherit
+```
+
+
+
 ### ワークフローの外部実行
 
 `repository_dispatch`イベントを使用し、APIを介して特定のイベントを発行し、ワークフローを実行することができる。`types`で受け付けるイベントタイプを指定し、`client_payload`で受け取ったデータにアクセスする。なお、他のイベントと異なり、このイベントはリポジトリのデフォルトブランチ（通常、`main`か`master`）でのみ動作する点に注意が必要である。
@@ -1237,7 +1294,7 @@ https://github.com/rhysd/actionlint/releases
 $ actionlint .github/workflows/*.yml
 ```
 
-
+<br>
 
 **<ins>複数のイベントが登録されているときは、入力パラメータに注意する</ins>**
 
@@ -1247,7 +1304,7 @@ $ actionlint .github/workflows/*.yml
 * プルリクエストでのレビューが開始されたらコード検証を行う（`on: pull_request`）
 * デバッグ確認のため、手動実行も可能にしておく(`on: workflow_dispatch`)
 
-
+<br>
 
 対応策１：
  `github.event.inputs`をシェル処理で使用するのは避ける。最初のステップで、全パラメータを環境変数に設定して、それを代わりに使用する。
@@ -1271,13 +1328,33 @@ jobs:
 `github.event.inputs`以下は常にnullとなりえる変数と仮定して、常に
 `${{ github.event.inputs.xxx || "default value"}}`というようにデフォルト値を添える。
 
+<br>
 
-
-<ins>入力パラメータはジョブサマリーに表示する</ins>
+**<ins>入力パラメータはジョブサマリーに表示する</ins>**
 
 GitHub Actionsの場合、入力パラメータの表示画面がない点に注意が必要である。そのため、例えば、入力パラメータは`${GITHUB_STEP_SUMMARY}`に出力し、ジョブサマリーに表示するなどデバッグや再実行を意識した実装が重要となる。
 
+<br>
 
-<ins>実行環境はロググループを使用して、情報を常に残す</ins>
+**<ins>実行環境はロググループを使用して、情報を常に残す</ins>**
 
 ジョブが失敗したとき、エラー時の状況は非常に重要な情報である。そのため、`printenv`や`df`など実行環境に関する情報は実行ログに残しておくべきである。一方、大量の情報を残すと可視性が落ちる。そのため、`::group::` / `::endgroup::`を使用して、カテゴリ毎にグループ化して実行環境の情報を折りたたんで残すことが望ましい。
+
+<br>
+
+**<ins>その他 セキュリティTips</ins>**
+
+* Dependabot: 依存パッケージの自動バージョンアップや脆弱性を含むバージョンの警告を自動的に行う
+
+* Secretlint: Node.js製のシークレットスキャンツール
+  ```bash
+  docker run -v `pwd`:`pwd` -w `pwd` --rm -it \
+    secretlint/secretlint secretlint "**/*"
+  ```
+
+* Gitleaks: ヒストリスキャン
+  ```bash
+  docker run -v `pwd`:`pwd` -w `pwd` --rm -it \
+    zricethezav/gitleaks detect --source=`pwd` --verbose --redact \
+    --log-opts="--all --full-history"
+  ```
