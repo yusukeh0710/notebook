@@ -1,2 +1,5 @@
 .ipynb_checkpoints
 .*.swp
+
+# Ignore any build directory at any depth
+build/

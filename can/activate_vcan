@@ -1,0 +1,10 @@
+#!/bin/bash
+DEV_NAME=vcan0
+if [ ! -z "$1" ]; then
+  DEVICE_NAME=$1
+fi
+
+sudo modprobe vcan
+sudo ip link add dev DEV_NAME type vcan
+sudo ip link set DEV_NAME up
+ip -br link show DEV_NAME
