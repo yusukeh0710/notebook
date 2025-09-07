@@ -33,6 +33,7 @@ Then, if you can see the input in the Terminal#1, the setup is completed.
   (Classic CAN)
 
   ```
+  cd sample
   mkdir build
   cd build
   cmake ../
@@ -41,6 +42,7 @@ Then, if you can see the input in the Terminal#1, the setup is completed.
 
   (CAN FD)
   ```
+  cd sample
   mkdir build
   cd build
   cmake -DUSE_CANFD=ON ../
